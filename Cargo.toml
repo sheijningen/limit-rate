@@ -1,0 +1,11 @@
+[package]
+name = "limit-rate"
+version = "0.1.0"
+edition = "2021"
+description = "Macro to prevent overwhelming resources by skipping execution"
+license = "MIT"
+repository = "https://github.com/sheijningen/limit-rate"
+readme = "README.md"
+keywords = ["macro", "run-once", "once", "run-once-thread"]
+
+[dependencies]

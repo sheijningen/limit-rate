@@ -1,0 +1,23 @@
+name: limit-rate-checks
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: linting
+        run: 
+            cargo fmt -- --check
+            cargo clippy -- -D warnings
+      - name: build
+        run: cargo build --release
+      - name: test
+        run: cargo test --workspace

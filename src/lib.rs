@@ -24,13 +24,51 @@ macro_rules! limit_rate {
 mod tests {
     use super::*;
 
+    use std::thread::sleep;
+    use std::time::Duration;
+
     #[test]
-    fn it_works() {
-        for _ in 0..3 {
-            limit_rate!(
-                eprintln!("AAAAAAAAAAAA"),
-                std::time::Duration::from_millis(0)
-            )
+    fn runs_once() {
+        let mut counter = Counter::new();
+        limit_rate!(counter.increment(), Duration::from_secs(1));
+        assert_eq!(counter.get_count(), 1);
+    }
+
+    #[test]
+    fn calls_after_duration() {
+        let mut counter = Counter::new();
+        for _ in 0..5 {
+            limit_rate!(counter.increment(), Duration::from_millis(20));
+            sleep(Duration::from_millis(40))
+        }
+        assert_eq!(counter.get_count(), 5);
+    }
+
+    #[test]
+    fn doesnt_call_before_duration() {
+        let mut counter = Counter::new();
+        for _ in 0..300 {
+            limit_rate!(counter.increment(), Duration::from_secs(30));
+        }
+        assert_eq!(counter.get_count(), 1);
+    }
+
+    #[derive(Debug, Clone)]
+    pub struct Counter {
+        count: i32,
+    }
+
+    impl Counter {
+        pub fn new() -> Self {
+            Counter { count: 0 }
+        }
+
+        pub fn increment(&mut self) {
+            self.count += 1;
+        }
+
+        pub fn get_count(&self) -> i32 {
+            self.count
         }
     }
 }
